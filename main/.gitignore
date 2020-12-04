@@ -1,0 +1,12 @@
+*.pyc
+*__pycache__
+*egg-info
+trained_models
+*.log
+*.out
+log/
+*.json
+.vscode/
+# PyPI
+build/*
+dist/*
