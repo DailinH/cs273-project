@@ -5,10 +5,12 @@ from ray.rllib.agents.sac import SACTrainer, DEFAULT_CONFIG
 from ray import tune
 
 class SACAgent(Agent):
-    def __init__(self, name, environment,training_iterations=10000, checkpoint_path=None):
+    def __init__(self, name, environment,training_iterations=10000, checkpoint_path=None, gpu=True):
         self.name = name
         self.env = environment
         self.config = DEFAULT_CONFIG
+        self.config['num_gpus'] = 1 if gpu else 0
+        self.config['num_gpus_per_worker'] = 1 if gpu else 0
         self.iterations = training_iterations
         self.trainer = SACTrainer(env = self.env)
         # load model

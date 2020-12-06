@@ -31,6 +31,7 @@ def parse_args():
     parser.add_argument("--test", action="store_true", default=False, help="collect the data from replay")
     parser.add_argument("--iter", type=int, default=100000, help="total number of training iterations")
     parser.add_argument("--save-rate", type=int, default=50, help="save model every x episodes")
+    parser.add_argument("--gpu", action="store_true", default=False, help="use gpus")
     return parser.parse_args()
 
 
@@ -66,11 +67,13 @@ def test(agent, display_mode='human', episode_cnt = 100):
 if __name__ == "__main__":
     ray.init(num_cpus=32, num_gpus=2, dashboard_host='0.0.0.0')
     arglist = parse_args()
+
     agent = SACAgent(
                 name="Soft Actor Critic Agent",
                 environment=arglist.env_name,
                 training_iterations=arglist.iter,
-                checkpoint_path=arglist.load_dir
+                checkpoint_path=arglist.load_dir,
+                gpu=arglist.gpu
             )
 
     if arglist.test is True:
