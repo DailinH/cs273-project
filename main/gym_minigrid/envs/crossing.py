@@ -1,5 +1,6 @@
 from gym_minigrid.minigrid import *
 from gym_minigrid.register import register
+from ray.tune.registry import register_env
 
 import itertools as itt
 
@@ -117,6 +118,26 @@ register(
     id='MiniGrid-LavaCrossingS11N5-v0',
     entry_point='gym_minigrid.envs:LavaCrossingS11N5Env'
 )
+
+def LavaCrossingEnvCreator(env_config):
+    return LavaCrossingEnv()
+
+def LavaCrossingS9N2EnvCreator(env_config):
+    return LavaCrossingS9N2Env()
+
+def LavaCrossingS9N3EnvCreator(env_config):
+    return LavaCrossingS9N3Env()
+
+def LavaCrossingS11N5EnvCreator(env_config):
+    return LavaCrossingS11N5Env()
+
+register_env('MiniGrid-LavaCrossingS9N1-v0', LavaCrossingEnvCreator)
+
+register_env('MiniGrid-LavaCrossingS9N2-v0', LavaCrossingS9N2EnvCreator)
+
+register_env('MiniGrid-LavaCrossingS9N3-v0', LavaCrossingS9N3EnvCreator)
+
+register_env('MiniGrid-LavaCrossingS11N5-v0', LavaCrossingS11N5EnvCreator)
 
 class SimpleCrossingEnv(CrossingEnv):
     def __init__(self):
