@@ -174,3 +174,23 @@ register(
     id='MiniGrid-SimpleCrossingS11N5-v0',
     entry_point='gym_minigrid.envs:SimpleCrossingS11N5Env'
 )
+
+def SimpleCrossingEnvCreator(env_config):
+    return SimpleCrossingEnv()
+
+def SimpleCrossingS9N2EnvCreator(env_config):
+    return SimpleCrossingS9N2Env()
+
+def SimpleCrossingS9N3EnvCreator(env_config):
+    return SimpleCrossingS9N3Env()
+
+def SimpleCrossingS11N5EnvCreator(env_config):
+    return SimpleCrossingS11N5Env()
+
+register_env('MiniGrid-SimpleCrossingS9N1-v0', SimpleCrossingEnvCreator)
+
+register_env('MiniGrid-SimpleCrossingS9N2-v0', SimpleCrossingS9N2EnvCreator)
+
+register_env('MiniGrid-SimpleCrossingS9N3-v0', SimpleCrossingS9N3EnvCreator)
+
+register_env('MiniGrid-SimpleCrossingS11N5-v0', SimpleCrossingS11N5EnvCreator)

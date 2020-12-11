@@ -135,33 +135,33 @@ class SACTFModel(TFModelV2):
             np.log(initial_alpha), dtype=tf.float32, name="log_alpha")
         self.alpha = tf.exp(self.log_alpha)
 
-        ## Target entropy: change this into tf Variable instead of tf constant  (DH)
-        # if target_entropy is None or target_entropy == "auto":
-        #     # See hyperparams in [2] (README.md).
-        #     if self.discrete:
-        #         self.target_entropy = tf.Variable([-np.log(1.0 / action_space.n)], dtype=tf.float32, name = "target_entropy")
-        #         print("target entropy {}".format(self.target_entropy))
-        #         tf.print(self.target_entropy)
-        #     # target_entropy = 0.7 * np.array(-np.log(1.0 / action_space.n), dtype=np.float32)           
-        # else:
-        #     self.target_entropy = None
-
-        # Auto-calculate the target entropy.
+        # Target entropy: change this into tf Variable instead of tf constant  (DH)
         if target_entropy is None or target_entropy == "auto":
             # See hyperparams in [2] (README.md).
             if self.discrete:
-                # target_entropy = 0
-                target_entropy = 0.7 * np.array(
-                    -np.log(1.0 / action_space.n), dtype=np.float32)
-            # See [1] (README.md).
-            else:
-                print("non-discrete")
-                # target_entropy = tf.Variable(-np.prod(action_space.shape), dtype=tf.float32, name='target_entropy')
-                target_entropy = -np.prod(action_space.shape)
-        self.target_entropy = target_entropy
+                self.target_entropy = tf.Variable([-np.log(1.0 / action_space.n)], dtype=tf.float32, name = "target_entropy")
+                print("target entropy {}".format(self.target_entropy))
+                tf.print(self.target_entropy)
+            # target_entropy = 0.7 * np.array(-np.log(1.0 / action_space.n), dtype=np.float32)           
+        else:
+            self.target_entropy = None
+
+        # # Auto-calculate the target entropy.
+        # if target_entropy is None or target_entropy == "auto":
+        #     # See hyperparams in [2] (README.md).
+        #     if self.discrete:
+        #         # target_entropy = 0
+        #         target_entropy = 0.7 * np.array(
+        #             -np.log(1.0 / action_space.n), dtype=np.float32)
+        #     # See [1] (README.md).
+        #     else:
+        #         print("non-discrete")
+        #         # target_entropy = tf.Variable(-np.prod(action_space.shape), dtype=tf.float32, name='target_entropy')
+        #         target_entropy = -np.prod(action_space.shape)
+        # self.target_entropy = target_entropy
 
         self.register_variables([self.log_alpha])
-        # self.register_variables([self.log_alpha, self.target_entropy])
+        self.register_variables([self.log_alpha, self.target_entropy])
 
     def get_q_values(self,
                      model_out: TensorType,

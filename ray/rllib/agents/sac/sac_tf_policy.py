@@ -6,6 +6,7 @@ import gym
 from gym.spaces import Box, Discrete
 from functools import partial
 import logging
+import numpy as np
 from typing import Dict, List, Optional, Tuple, Type, Union
 
 import ray
@@ -36,6 +37,20 @@ tf1, tf, tfv = try_import_tf()
 tfp = try_import_tfp()
 
 logger = logging.getLogger(__name__)
+
+
+def update_target_entropy(policy: Policy):
+    # Constant Target
+    # pass
+
+    # Linear Target
+    # tf.compat.v1.assign_sub(policy.target_entropy, [1e-6])
+
+    # Actor Loss Target
+    # policy.target_entropy = np.asscalar(np.clip(10 * policy.initial_target_entropy / (policy.actor_loss.numpy() + 50), 1e-2, policy.initial_target_entropy))
+
+    # Critic Loss Target
+    policy.target_entropy = np.asscalar(np.clip(10 * policy.initial_target_entropy / tf.math.add_n(policy.critic_loss).numpy(), 1e-2, policy.initial_target_entropy))
 
 
 def build_sac_model(policy: Policy, obs_space: gym.spaces.Space,
@@ -109,9 +124,13 @@ def build_sac_model(policy: Policy, obs_space: gym.spaces.Space,
         twin_q=config["twin_q"],
         initial_alpha=config["initial_alpha"],
         target_entropy=config["target_entropy"])
-    # policy.
+
+    # policy.initial_target_entropy = tf.Variable(model.target_entropy.initialized_value())
     # policy.target_entropy = tf.Variable(model.target_entropy.initialized_value())
+
+    policy.initial_target_entropy = model.target_entropy
     policy.target_entropy = model.target_entropy
+
     return model
 
 
@@ -520,7 +539,7 @@ def apply_gradients(
     # Eager mode -> Just apply and return None.
     if policy.config["framework"] in ["tf2", "tfe"]:
         policy._alpha_optimizer.apply_gradients(policy._alpha_grads_and_vars)
-        # tf.compat.v1.assign_sub(policy.target_entropy, [1e-6])
+        update_target_entropy(policy)
         policy.model.alpha = tf.exp(policy.model.log_alpha)
         return
     # Tf static graph -> Return op.
