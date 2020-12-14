@@ -38,19 +38,26 @@ tfp = try_import_tfp()
 
 logger = logging.getLogger(__name__)
 
-
 def update_target_entropy(policy: Policy):
     # Constant Target
     # pass
+    policy.target_entropy = policy.target_entropy
 
     # Linear Target
     # tf.compat.v1.assign_sub(policy.target_entropy, [1e-6])
+
+    # Step Target
+    # tf.compat.v1.assign_sub(policy.target_entropy, [1e-1 * (1/(policy.global_timestep*1.3))])
+
+    # Sin Wave Target
+    # make sure to change the initial entropy in sac_tf_model to the constant target entropy
+    #policy.target_entropy = policy.initial_target_entropy + 0.2 * np.sin((policy.global_timestep * 0.5) % 360 * np.pi / 180) * np.maximum(0, 1 - (2e-5 * policy.global_timestep))
 
     # Actor Loss Target
     # policy.target_entropy = np.asscalar(np.clip(10 * policy.initial_target_entropy / (policy.actor_loss.numpy() + 50), 1e-2, policy.initial_target_entropy))
 
     # Critic Loss Target
-    policy.target_entropy = np.asscalar(np.clip(10 * policy.initial_target_entropy / tf.math.add_n(policy.critic_loss).numpy(), 1e-2, policy.initial_target_entropy))
+    # policy.target_entropy = np.asscalar(np.clip(10 * policy.initial_target_entropy / tf.math.add_n(policy.critic_loss).numpy(), 1e-2, policy.initial_target_entropy))
 
 
 def build_sac_model(policy: Policy, obs_space: gym.spaces.Space,
